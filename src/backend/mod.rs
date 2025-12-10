@@ -6,13 +6,11 @@
 
 use std::collections::HashSet;
 
+use iced_graphics::core::text::Alignment;
 use iced_graphics::core::text::Paragraph;
 use iced_widget::{
     canvas,
-    core::{
-        alignment::{Horizontal, Vertical},
-        font, text, Font, Size,
-    },
+    core::{alignment::Vertical, font, text, Font, Size},
     text::Shaping,
 };
 use once_cell::unsync::Lazy;
@@ -208,9 +206,9 @@ where
             return Ok(());
         }
         let horizontal_alignment = match style.anchor().h_pos {
-            text_anchor::HPos::Left => Horizontal::Left,
-            text_anchor::HPos::Right => Horizontal::Right,
-            text_anchor::HPos::Center => Horizontal::Center,
+            text_anchor::HPos::Left => Alignment::Left,
+            text_anchor::HPos::Right => Alignment::Right,
+            text_anchor::HPos::Center => Alignment::Center,
         };
         let vertical_alignment = match style.anchor().v_pos {
             text_anchor::VPos::Top => Vertical::Top,
@@ -224,12 +222,13 @@ where
         let text = canvas::Text {
             content: text.to_owned(),
             position: pos,
+            max_width: f32::INFINITY,
             color: cvt_color(&style.color()),
             size: (style.size() as f32).into(),
             line_height: Default::default(),
             font,
-            horizontal_alignment,
-            vertical_alignment,
+            align_x: horizontal_alignment,
+            align_y: vertical_alignment,
             shaping: self.shaping,
         };
         //TODO: fix rotation until text rotation is supported by Iced
@@ -265,9 +264,9 @@ where
         let font = style_to_font(style);
         let bounds = self.frame.size();
         let horizontal_alignment = match style.anchor().h_pos {
-            text_anchor::HPos::Left => Horizontal::Left,
-            text_anchor::HPos::Right => Horizontal::Right,
-            text_anchor::HPos::Center => Horizontal::Center,
+            text_anchor::HPos::Left => Alignment::Left,
+            text_anchor::HPos::Right => Alignment::Right,
+            text_anchor::HPos::Center => Alignment::Center,
         };
         let vertical_alignment = match style.anchor().v_pos {
             text_anchor::VPos::Top => Vertical::Top,
@@ -281,8 +280,8 @@ where
             size: self.backend.default_size(),
             line_height: Default::default(),
             font,
-            horizontal_alignment,
-            vertical_alignment,
+            align_x: horizontal_alignment,
+            align_y: vertical_alignment,
             shaping: self.shaping,
             wrapping: iced_widget::core::text::Wrapping::Word,
         });

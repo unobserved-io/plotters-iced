@@ -9,7 +9,6 @@ use core::marker::PhantomData;
 use iced_widget::{
     canvas::Event,
     core::{
-        event,
         mouse::Cursor,
         renderer::Style,
         widget::{tree, Tree},
@@ -89,7 +88,7 @@ where
 
     #[inline]
     fn layout(
-        &self,
+        &mut self,
         _tree: &mut Tree,
         _renderer: &Renderer,
         limits: &iced_widget::core::layout::Limits,
@@ -114,36 +113,34 @@ where
     }
 
     #[inline]
-    fn on_event(
+    fn update(
         &mut self,
         tree: &mut Tree,
-        event: iced_widget::core::Event,
+        event: &iced_widget::core::Event,
         layout: Layout<'_>,
         cursor: Cursor,
         _renderer: &Renderer,
         _clipboard: &mut dyn iced_widget::core::Clipboard,
         shell: &mut Shell<'_, Message>,
         _rectangle: &Rectangle,
-    ) -> event::Status {
+    ) {
         let bounds = layout.bounds();
         let canvas_event = match event {
-            iced_widget::core::Event::Mouse(mouse_event) => Some(Event::Mouse(mouse_event)),
+            iced_widget::core::Event::Mouse(mouse_event) => Some(Event::Mouse(*mouse_event)),
             iced_widget::core::Event::Keyboard(keyboard_event) => {
-                Some(Event::Keyboard(keyboard_event))
+                Some(Event::Keyboard(keyboard_event.clone()))
             }
             _ => None,
         };
         if let Some(canvas_event) = canvas_event {
             let state = tree.state.downcast_mut::<C::State>();
 
-            let (event_status, message) = self.chart.update(state, canvas_event, bounds, cursor);
+            let (_, message) = self.chart.update(state, canvas_event, bounds, cursor);
 
             if let Some(message) = message {
                 shell.publish(message);
             }
-            return event_status;
         }
-        event::Status::Ignored
     }
 
     fn mouse_interaction(
