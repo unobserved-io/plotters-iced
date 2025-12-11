@@ -16,7 +16,7 @@ plotters = { version = "0.3", default-features = false, features = [
 ] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-iced.version = "0.13"
+iced.version = "0.14"
 iced.features = ["canvas", "debug", "webgl"]
 
 console_error_panic_hook = "0.1"
